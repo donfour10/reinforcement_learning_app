@@ -47,8 +47,8 @@ def main():
     iterations = col2.slider('Iterations', 1, 15, 1)
     if col1.button('Find Destination'):
         for i in  range(iterations):
-            st.header('Iteration '+str(i))
-            arr = find_dest(startpoint, destination, x_size, y_size, arr)
+            st.header('Iteration '+str(i+1))
+            arr = find_dest(startpoint, destination, x_size, y_size, arr, i)
 
     # show_heatmap(arr)
 
@@ -63,23 +63,59 @@ def init_matrix(x,y, startpoint, destination):
     df.at[dest_x,dest_y] = 1
     return df
 
-def find_dest(start, dest, x,y, df):
+def find_dest(start, dest, x,y, df, run_number):
     # df = pd.DataFrame(0, index=range(0,y),columns=range(0,x)).astype(float)
-    # x_start = start[0]
-    # y_start = start[1]
-    # dest_x = dest[0]
-    # dest_y = dest[1]
+    x_start = start[0]
+    y_start = start[1]
+    dest_x = dest[0]
+    dest_y = dest[1]
     # # st.write(df)
-    # df.at[x_start,y_start] = 1
-    # df.at[dest_x,dest_y] = 1
+    df.at[x_start,y_start] = 0
+    if run_number==0:
+        df.at[dest_x,dest_y] = 0
     # st.write(df)
     step_list = []
     i = 0
     actual_point = start
     actual_point_x, actual_point_y = start[0], start[1]
-    while (actual_point!=dest)&(i<2000):
+    st.write(df.transpose())
+    while (actual_point!=dest)&(i<5000):
         step_possabilities = ['u', 'd', 'l', 'r']
-        next_step = step_possabilities[random.randint(0,3)]
+        # get next points to actual point
+        neighbors = find_neighbors(actual_point, df, y, x)
+        # neighbors= []
+        # if actual_point_y!=y-1:
+        #     # try:
+        #     lower_point = df.at[actual_point_x, actual_point_y+1]
+        #     neighbors.append((lower_point, 'd'))
+        #     # except:
+        #     #     pass
+        # if actual_point_y!=0:
+        #     # try:
+        #     upper_point = df.at[actual_point_x, actual_point_y-1]
+        #     neighbors.append((upper_point, 'u'))
+        #     # except:
+        #     #     pass
+        # if actual_point_x!=x-1:
+        #     # try:
+        #     right_point = df.at[actual_point_x+1, actual_point_y]
+        #     neighbors.append((right_point, 'r'))
+        #     # except:
+        #     #     pass
+        # if actual_point_x !=0:
+        #     # try:
+        #     left_point = df.at[actual_point_x-1, actual_point_y]
+        #     neighbors.append((left_point, 'l'))
+        #     # except:
+        #     #     pass
+        # # print(neighbors)
+        if all(v[0] == 0 for v in neighbors):
+            print(True)
+            next_step = step_possabilities[random.randint(0,3)]
+        else:
+            neighbors.sort(key=lambda tup: tup[0], reverse=True)
+            next_step = neighbors[0][1]
+        print(next_step)
         if next_step == 'u':
             if actual_point_y !=0:
                 actual_point_y -=1
@@ -104,9 +140,12 @@ def find_dest(start, dest, x,y, df):
     step_df['reward'] = 0.9**abs(step_df['step']-len(step_df))
     st.dataframe(step_df)
     plc_dev_heatmap = st.empty()
-    for i in range(len(step_df)):
-        if step_df.at[i, 'reward']>df.at[step_df.at[i,'x'], step_df.at[i,'y']]:
-            df.at[step_df.at[i,'x'], step_df.at[i,'y']] = step_df.at[i, 'reward']
+    rewarded_points = []
+    for i in reversed(range(len(step_df))):
+        # if step_df.at[i, 'reward']>df.at[step_df.at[i,'x'], step_df.at[i,'y']]:
+        if (step_df.at[i,'x'], step_df.at[i,'y']) not in rewarded_points:
+            df.at[step_df.at[i,'x'], step_df.at[i,'y']] += step_df.at[i, 'reward']
+            rewarded_points.append((step_df.at[i,'x'], step_df.at[i,'y']))
         # if i%100==0:
         #     print(i)
     # plc_dev_heatmap = st.empty()
@@ -123,5 +162,32 @@ def show_heatmap_v2(matrix, plc):
     fig = plt.figure(figsize=(10,8))
     r = sns.heatmap(matrix.transpose(), linewidths=3, cmap='Blues', cbar=False, mask=(matrix.transpose()==0))
     plc.pyplot(fig)
+
+def find_neighbors(actual_point, df, y,x):
+    actual_point_x, actual_point_y = actual_point[0], actual_point[1]
+    neighbors= []
+    if actual_point_y!=y-1:
+        # try:
+        lower_point = df.at[actual_point_x, actual_point_y+1]
+        neighbors.append((lower_point, 'd'))
+        # except:
+        #     pass
+    if actual_point_y!=0:
+        # try:
+        upper_point = df.at[actual_point_x, actual_point_y-1]
+        neighbors.append((upper_point, 'u'))
+        # except:
+        #     pass
+    if actual_point_x!=x-1:
+        # try:
+        right_point = df.at[actual_point_x+1, actual_point_y]
+        neighbors.append((right_point, 'r'))
+        # except:
+        #     pass
+    if actual_point_x !=0:
+        # try:
+        left_point = df.at[actual_point_x-1, actual_point_y]
+        neighbors.append((left_point, 'l'))
+    return neighbors
 
 main()
