@@ -47,6 +47,7 @@ def main():
     iterations = col2.slider('Iterations', 1, 15, 1)
     if col1.button('Find Destination'):
         for i in  range(iterations):
+            st.header('Iteration '+str(i))
             arr = find_dest(startpoint, destination, x_size, y_size, arr)
 
     # show_heatmap(arr)
