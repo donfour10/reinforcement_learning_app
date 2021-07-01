@@ -81,34 +81,7 @@ def find_dest(start, dest, x,y, df, run_number):
     st.write(df.transpose())
     while (actual_point!=dest)&(i<5000):
         step_possabilities = ['u', 'd', 'l', 'r']
-        # get next points to actual point
-        neighbors = find_neighbors(actual_point, df, y, x)
-        # neighbors= []
-        # if actual_point_y!=y-1:
-        #     # try:
-        #     lower_point = df.at[actual_point_x, actual_point_y+1]
-        #     neighbors.append((lower_point, 'd'))
-        #     # except:
-        #     #     pass
-        # if actual_point_y!=0:
-        #     # try:
-        #     upper_point = df.at[actual_point_x, actual_point_y-1]
-        #     neighbors.append((upper_point, 'u'))
-        #     # except:
-        #     #     pass
-        # if actual_point_x!=x-1:
-        #     # try:
-        #     right_point = df.at[actual_point_x+1, actual_point_y]
-        #     neighbors.append((right_point, 'r'))
-        #     # except:
-        #     #     pass
-        # if actual_point_x !=0:
-        #     # try:
-        #     left_point = df.at[actual_point_x-1, actual_point_y]
-        #     neighbors.append((left_point, 'l'))
-        #     # except:
-        #     #     pass
-        # # print(neighbors)
+        neighbors = find_neighbors(actual_point, df, y, x)# get next points to actual point
         if all(v[0] == 0 for v in neighbors):
             print(True)
             next_step = step_possabilities[random.randint(0,3)]
