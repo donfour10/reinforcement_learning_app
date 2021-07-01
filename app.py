@@ -44,7 +44,7 @@ def main():
         arr = init_matrix(x_size,y_size, startpoint, destination)
     show_heatmap(arr)
     col1, col2 = st.beta_columns(2)
-    iterations = col2.slider('Iterations', 1, 5, 1)
+    iterations = col2.slider('Iterations', 1, 15, 1)
     if col1.button('Find Destination'):
         for i in  range(iterations):
             arr = find_dest(startpoint, destination, x_size, y_size, arr)
@@ -104,7 +104,8 @@ def find_dest(start, dest, x,y, df):
     st.dataframe(step_df)
     plc_dev_heatmap = st.empty()
     for i in range(len(step_df)):
-        df.at[step_df.at[i,'x'], step_df.at[i,'y']] = step_df.at[i, 'reward']
+        if step_df.at[i, 'reward']>df.at[step_df.at[i,'x'], step_df.at[i,'y']]:
+            df.at[step_df.at[i,'x'], step_df.at[i,'y']] = step_df.at[i, 'reward']
         # if i%100==0:
         #     print(i)
     # plc_dev_heatmap = st.empty()
