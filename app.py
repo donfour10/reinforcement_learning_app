@@ -39,7 +39,7 @@ def main():
         #         x_start = random.randint(0,x_size-1)
         #         y_start = random.randint(0,y_size-1)
         #         startpoint = (x_start,y_start)
-        submitted = st.form_submit_button('Submit or Clean rewards')
+        submitted = st.form_submit_button('Submit and Clean rewards')
         # if submitted:
         arr = init_matrix(x_size,y_size, startpoint, destination)
     show_heatmap(arr)
