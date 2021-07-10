@@ -1,5 +1,5 @@
 # reinforcement_learning_app
-Example app for findig a way in a matrix.
+Example app for finding a way in a matrix.
 
 
 How to run the App:
