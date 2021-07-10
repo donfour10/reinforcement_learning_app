@@ -31,16 +31,7 @@ def main():
         y_start = st.number_input('Start-Y', 0, y_size-1, y_size-1)
         startpoint = (x_start,y_start)
         destination = (dest_x,dest_y)
-        # if st.checkbox('Random Startpoint', True):
-        #     x_start = random.randint(0,x_size-1)
-        #     y_start = random.randint(0,y_size-1)
-        #     startpoint = (x_start,y_start)
-        #     while startpoint==destination:
-        #         x_start = random.randint(0,x_size-1)
-        #         y_start = random.randint(0,y_size-1)
-        #         startpoint = (x_start,y_start)
         submitted = st.form_submit_button('Submit and Clean rewards')
-        # if submitted:
         arr = init_matrix(x_size,y_size, startpoint, destination)
     show_heatmap(arr)
     col1, col2 = st.beta_columns(2)
@@ -52,7 +43,6 @@ def main():
         st.header('Final Run')
         arr = find_dest(startpoint, destination, x_size, y_size, arr, iterations, rand=False)
 
-    # show_heatmap(arr)
 
 def init_matrix(x,y, startpoint, destination):
     rng = np.random.default_rng()
@@ -66,21 +56,17 @@ def init_matrix(x,y, startpoint, destination):
     return df
 
 def find_dest(start, dest, x,y, df, run_number, rand=True):
-    # df = pd.DataFrame(0, index=range(0,y),columns=range(0,x)).astype(float)
     x_start = start[0]
     y_start = start[1]
     dest_x = dest[0]
     dest_y = dest[1]
-    # # st.write(df)
     df.at[x_start,y_start] = 0
     if run_number==0:
         df.at[dest_x,dest_y] = 0
-    # st.write(df)
     step_list = []
     i = 0
     actual_point = start
     actual_point_x, actual_point_y = start[0], start[1]
-    #st.write(df.transpose())
     while (actual_point!=dest)&(i<5000):
         step_possabilities = ['u', 'd', 'l', 'r']
         if rand==False:
@@ -116,20 +102,14 @@ def find_dest(start, dest, x,y, df, run_number, rand=True):
     step_df = pd.DataFrame(step_list,columns=['step', 'x', 'y'])
     st.write('It needed '+str(i)+' Steps.')
     step_df['reward'] = 0.9**abs(step_df['step']-len(step_df))
-    # st.dataframe(step_df)
     plc_dev_heatmap = st.empty()
     rewarded_points = []
     for i in reversed(range(len(step_df))):
-        # if step_df.at[i, 'reward']>df.at[step_df.at[i,'x'], step_df.at[i,'y']]:
         if (step_df.at[i,'x'], step_df.at[i,'y']) not in rewarded_points:
             df.at[step_df.at[i,'x'], step_df.at[i,'y']] += step_df.at[i, 'reward']
             rewarded_points.append((step_df.at[i,'x'], step_df.at[i,'y']))
-        # if i%100==0:
-        #     print(i)
-    # plc_dev_heatmap = st.empty()
     if rand == False:
         show_heatmap_v2(df, plc_dev_heatmap, step_df, start, dest)
-    # st.write(df)
     return df
 
 def show_heatmap(matrix):
@@ -146,32 +126,21 @@ def show_heatmap_v2(matrix, plc,step_df, start, dest):
         y = step_df.at[i, 'y']
         r.add_patch(plt.Rectangle((x,y),1,1,fill=False, edgecolor='black', lw=5))
     r.add_patch(plt.Rectangle(dest,1,1,fill=False, edgecolor='green', lw=5))
-    #ax.add_patch(plt.Rectangle((1,2),2,1,fill=False, edgecolor='black', lw=5))
     plc.pyplot(fig)
 
 def find_neighbors(actual_point, df, y,x):
     actual_point_x, actual_point_y = actual_point[0], actual_point[1]
     neighbors= []
     if actual_point_y!=y-1:
-        # try:
         lower_point = df.at[actual_point_x, actual_point_y+1]
         neighbors.append((lower_point, 'd'))
-        # except:
-        #     pass
     if actual_point_y!=0:
-        # try:
         upper_point = df.at[actual_point_x, actual_point_y-1]
         neighbors.append((upper_point, 'u'))
-        # except:
-        #     pass
     if actual_point_x!=x-1:
-        # try:
         right_point = df.at[actual_point_x+1, actual_point_y]
         neighbors.append((right_point, 'r'))
-        # except:
-        #     pass
     if actual_point_x !=0:
-        # try:
         left_point = df.at[actual_point_x-1, actual_point_y]
         neighbors.append((left_point, 'l'))
     return neighbors
