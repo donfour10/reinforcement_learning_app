@@ -12,7 +12,7 @@ How to run the App:
 
 
 additionally needed librarys:
-pandas
-numpy
-seaborn
-matplotlib
+pandas,
+numpy,
+seaborn,
+matplotlib,
